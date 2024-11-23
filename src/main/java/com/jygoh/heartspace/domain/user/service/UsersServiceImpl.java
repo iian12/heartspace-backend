@@ -1,7 +1,7 @@
 package com.jygoh.heartspace.domain.user.service;
 
 import com.jygoh.heartspace.domain.user.model.Users;
-import com.jygoh.heartspace.domain.user.repository.UsersRepository;
+import com.jygoh.heartspace.domain.user.repository.UserRepository;
 import com.jygoh.heartspace.global.security.auth.dto.GoogleUserDto;
 import com.jygoh.heartspace.global.security.jwt.dto.TokenResponseDto;
 import com.jygoh.heartspace.global.security.jwt.service.JwtTokenProvider;
@@ -11,17 +11,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsersServiceImpl implements UsersService {
 
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public UsersServiceImpl(UsersRepository usersRepository, JwtTokenProvider jwtTokenProvider) {
-        this.usersRepository = usersRepository;
+    public UsersServiceImpl(UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
+        this.userRepository = userRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public TokenResponseDto processingGoogleUser(GoogleUserDto userDto) {
-        Optional<Users> optionalMember = usersRepository.findByEmail(userDto.getEmail());
+        Optional<Users> optionalMember = userRepository.findByEmail(userDto.getEmail());
         TokenResponseDto tokenResponseDto = new TokenResponseDto();
 
         if (optionalMember.isPresent()) {
@@ -39,7 +39,7 @@ public class UsersServiceImpl implements UsersService {
                 .subjectId(userDto.getSubjectId())
                 .build();
 
-            usersRepository.save(newUser);
+            userRepository.save(newUser);
 
             String accessToken = jwtTokenProvider.createAccessToken(newUser.getId());
             String refreshToken = jwtTokenProvider.createRefreshToken(newUser.getId());

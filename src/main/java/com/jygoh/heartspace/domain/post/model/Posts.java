@@ -38,6 +38,16 @@ public class Posts {
 
     private LocalDateTime updatedAt;
 
+    private int views;
+
+    private int likes;
+
+    private int commentCount;
+
+    private int replyCount;
+
+    private int reportCount;
+
     @Builder
     public Posts(Long userId, String title, String content, Category category, boolean isAnonymous) {
         this.userId = userId;
@@ -48,6 +58,11 @@ public class Posts {
         this.createdAt = LocalDateTime.now();
         this.isUpdated = false;
         this.updatedAt = null;
+        this.views = 0;
+        this.likes = 0;
+        this.commentCount = 0;
+        this.replyCount = 0;
+        this.reportCount = 0;
     }
 
     public void updatePosts(String newTitle, String newContent, boolean isAnonymous) {
