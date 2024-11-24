@@ -6,4 +6,6 @@ import com.jygoh.heartspace.global.security.jwt.dto.TokenResponseDto;
 public interface UsersService {
 
     TokenResponseDto processingGoogleUser(GoogleUserDto userDto);
+
+    boolean isNewUser(String email);
 }

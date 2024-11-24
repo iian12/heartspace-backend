@@ -50,4 +50,9 @@ public class UsersServiceImpl implements UsersService {
 
         return tokenResponseDto;
     }
+
+    @Override
+    public boolean isNewUser(String email) {
+        return !userRepository.existsByEmail(email);
+    }
 }

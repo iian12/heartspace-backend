@@ -24,6 +24,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String profileImageUrl = getAttribute(oAuth2User, provider, "picture");
         String subjectId = getAttribute(oAuth2User, provider, "sub");
         String name = getAttribute(oAuth2User, provider, "name");
+
+        boolean isNewUser = userRepository.findByEmail(email).isEmpty();
+
         Users user = userRepository.findByEmail(email).map(existingMember -> {
             if (!existingMember.getSubjectId().equals(subjectId)) {
                 existingMember.updateSubjectId(subjectId);
@@ -35,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .profileImgUrl(profileImageUrl).provider("GOOGLE").subjectId(subjectId).build();
             return userRepository.save(newUser);
         });
-        return new CustomUserDetail(user, user.getId());
+        return new CustomUserDetail(user, user.getId(), isNewUser);
     }
 
     private String getAttribute(OAuth2User oAuth2User, String provider, String attributeName) {

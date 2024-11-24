@@ -47,6 +47,7 @@ public class AuthController {
             String cleanedIdToken = idToken.getIdToken();
             GoogleIdToken token = verifier.verify(cleanedIdToken);
 
+
             if (token != null) {
                 GoogleIdToken.Payload payload = token.getPayload();
                 String email = payload.getEmail();
@@ -61,11 +62,16 @@ public class AuthController {
                     .subjectId(subjectId)
                     .build();
 
+                boolean isNewUser = usersService.isNewUser(email);
+
                 TokenResponseDto tokenResponseDto = usersService.processingGoogleUser(userDto);
                 if (tokenResponseDto.getAccessToken() != null && tokenResponseDto.getRefreshToken() != null) {
                     response.setHeader("Authorization", "Bearer " + tokenResponseDto.getAccessToken());
                     response.setHeader("Refresh-Token", "Bearer " + tokenResponseDto.getRefreshToken());
-                    return ResponseEntity.ok().build();
+                    if (isNewUser)
+                        return ResponseEntity.status(HttpStatus.CREATED).build();
+                    else
+                        return ResponseEntity.status(HttpStatus.OK).build();
                 }
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             } else {

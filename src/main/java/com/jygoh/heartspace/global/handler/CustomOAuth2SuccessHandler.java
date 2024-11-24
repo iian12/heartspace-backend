@@ -28,6 +28,13 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String refreshToken = jwtTokenProvider.createRefreshToken(userId);
         Cookie accessTokenCookie = createCookie("access_token", accessToken);
         Cookie refreshTokenCookie = createCookie("refresh_token", refreshToken);
+
+        if (userDetail.isNewUser()) {
+            response.setStatus(HttpServletResponse.SC_CREATED);
+        } else {
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
+
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
         response.sendRedirect("http://localhost:3000/login/callback");

@@ -22,13 +22,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         Users user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        return new CustomUserDetail(user, user.getId());
+        return new CustomUserDetail(user, user.getId(), false);
     }
 
     public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
         Users user = userRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
 
-        return new CustomUserDetail(user, user.getId());
+        return new CustomUserDetail(user, user.getId(), false);
     }
 }

@@ -10,14 +10,23 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public class CustomUserDetail implements UserDetails, OAuth2User {
 
-    private Users user;
+    private final Users user;
     private final OAuth2User oAuth2User;
     private final Long userId;
+    private final boolean isNewUser;
 
-    public CustomUserDetail(Users user, Long userId) {
+    public CustomUserDetail(Users user, Long userId, boolean isNewUser) {
         this.user = user;
         this.oAuth2User = null;
         this.userId = userId;
+        this.isNewUser = isNewUser;
+    }
+
+    public CustomUserDetail(OAuth2User oAuth2User, Long userId, boolean isNewUser) {
+        this.user = null;
+        this.oAuth2User = oAuth2User;
+        this.userId = userId;
+        this.isNewUser = isNewUser;
     }
 
     @Override
@@ -79,7 +88,7 @@ public class CustomUserDetail implements UserDetails, OAuth2User {
         return user;
     }
 
-    public String getProfileId() {
-        return user != null ? user.getProfileImgUrl() : null;
+    public boolean isNewUser() {
+        return isNewUser;
     }
 }
