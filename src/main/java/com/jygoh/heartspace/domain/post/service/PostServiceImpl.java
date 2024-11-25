@@ -6,7 +6,7 @@ import com.jygoh.heartspace.domain.post.model.Posts;
 import com.jygoh.heartspace.domain.post.repository.PostRepository;
 import com.jygoh.heartspace.domain.user.model.Users;
 import com.jygoh.heartspace.domain.user.repository.UserRepository;
-import com.jygoh.heartspace.global.security.utils.EncodeDecode;
+import com.jygoh.heartspace.global.utils.EncodeDecode;
 import com.jygoh.heartspace.global.security.utils.TokenUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public String createComment(CreatePostReqDto reqDto, String token) {
+    public String createPost(CreatePostReqDto reqDto, String token) {
         Users user = userRepository.findById(TokenUtils.getUserIdFromToken(token))
             .orElseThrow(() -> new IllegalArgumentException("Invalid User"));
 

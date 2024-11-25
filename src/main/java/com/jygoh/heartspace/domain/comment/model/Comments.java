@@ -24,6 +24,7 @@ public class Comments {
     private Long postId;
     private Long replyId;
     private Long userId;
+
     @Enumerated(EnumType.STRING)
     private CommentType commentType;
     private String content;
@@ -35,11 +36,11 @@ public class Comments {
     @Builder
     public Comments(Long postId, Long replyId, Long userId, CommentType commentType, String content, Long parentCommentId) {
         this.postId = postId;
-        this.replyId = replyId;
+        this.replyId = replyId != null ? replyId : 0L;
         this.userId = userId;
         this.commentType = commentType;
         this.content = content;
-        this.parentCommentId = parentCommentId;
+        this.parentCommentId = parentCommentId != null ? parentCommentId : 0L;
         this.createdAt = LocalDateTime.now();
         this.isUpdated = false;
     }
