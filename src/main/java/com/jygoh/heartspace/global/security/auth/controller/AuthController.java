@@ -6,9 +6,11 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.common.io.BaseEncoding;
+import com.jygoh.heartspace.domain.user.dto.SetInfoReqDto;
 import com.jygoh.heartspace.domain.user.service.UsersService;
 import com.jygoh.heartspace.global.security.auth.dto.GoogleUserDto;
 import com.jygoh.heartspace.global.security.auth.dto.IdTokenDto;
+import com.jygoh.heartspace.global.security.auth.service.AuthService;
 import com.jygoh.heartspace.global.security.jwt.dto.TokenResponseDto;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,9 +29,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UsersService usersService;
+    private final AuthService authService;
 
-    public AuthController(UsersService usersService) {
+    public AuthController(UsersService usersService, AuthService authService) {
         this.usersService = usersService;
+        this.authService = authService;
     }
 
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -47,31 +51,26 @@ public class AuthController {
             String cleanedIdToken = idToken.getIdToken();
             GoogleIdToken token = verifier.verify(cleanedIdToken);
 
-
             if (token != null) {
                 GoogleIdToken.Payload payload = token.getPayload();
                 String email = payload.getEmail();
-                String nickname = (String) payload.get("name");
                 String profileImagUrl = (String) payload.get("picture");
                 String subjectId = payload.getSubject();
 
                 GoogleUserDto userDto = GoogleUserDto.builder()
                     .email(email)
-                    .nickname(nickname)
                     .profileImgUrl(profileImagUrl)
                     .subjectId(subjectId)
                     .build();
-
-                boolean isNewUser = usersService.isNewUser(email);
 
                 TokenResponseDto tokenResponseDto = usersService.processingGoogleUser(userDto);
                 if (tokenResponseDto.getAccessToken() != null && tokenResponseDto.getRefreshToken() != null) {
                     response.setHeader("Authorization", "Bearer " + tokenResponseDto.getAccessToken());
                     response.setHeader("Refresh-Token", "Bearer " + tokenResponseDto.getRefreshToken());
-                    if (isNewUser)
-                        return ResponseEntity.status(HttpStatus.CREATED).build();
-                    else
-                        return ResponseEntity.status(HttpStatus.OK).build();
+                    return ResponseEntity.status(HttpStatus.OK).build();
+                } else {
+                    response.setStatus(HttpStatus.PRECONDITION_REQUIRED.value());
+                    response.setHeader("X-User-ID", tokenResponseDto.getEncodeUserId());
                 }
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             } else {
@@ -81,6 +80,18 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (GeneralSecurityException | IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/set-info")
+    public ResponseEntity<String> setNickname(@RequestBody SetInfoReqDto reqDto, HttpServletResponse response) {
+        TokenResponseDto tokenResponseDto = authService.setUserInfo(reqDto);
+        if (tokenResponseDto.getAccessToken() != null && tokenResponseDto.getRefreshToken() != null) {
+            response.setHeader("Authorization", "Bearer " + tokenResponseDto.getAccessToken());
+            response.setHeader("Refresh-Token", "Bearer " + tokenResponseDto.getRefreshToken());
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

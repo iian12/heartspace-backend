@@ -1,9 +1,12 @@
 package com.jygoh.heartspace.global.security.jwt.service;
 
 import com.jygoh.heartspace.global.security.utils.EncryptionUtils;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Base64;
@@ -65,21 +68,16 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token) {
+
         try {
-            if (token == null || token.isEmpty()) {
-                return false;
-            }
-
-            String bearerToken = token.trim();
-
-            if (!bearerToken.trim().isEmpty() && bearerToken.startsWith("Bearer ")) {
-                token = bearerToken.substring(7);
-            }
-
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            return false;
+        } catch (SignatureException | MalformedJwtException e) {
+            return false; // 잘못된 서명
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("TOKEN_EXPIRED"); // 만료된 토큰
+        } catch (IllegalArgumentException e) {
+            return false; // 잘못된 토큰
         }
     }
 }

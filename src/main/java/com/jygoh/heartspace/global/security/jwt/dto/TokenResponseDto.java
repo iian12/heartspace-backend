@@ -12,10 +12,12 @@ public class TokenResponseDto {
 
     private String accessToken;
     private String refreshToken;
+    private String encodeUserId;
 
     @Builder
-    public TokenResponseDto(String accessToken, String refreshToken) {
+    public TokenResponseDto(String accessToken, String refreshToken, String encodeUserId) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.encodeUserId = encodeUserId;
     }
 }

@@ -27,6 +27,9 @@ public class Users {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, unique = true)
+    private String profileId;
+
     @Column(nullable = false)
     private String nickname;
 
@@ -37,20 +40,38 @@ public class Users {
     private String subjectId;
 
     private int postCount;
+    private int feedCount;
 
-    private int commentCount;
+    private int followerCount;
+    private int followingCount;
+
+    private boolean isSignUp;
 
     @Builder
-    public Users(String email, String password, String nickname, String profileImgUrl,
-        String provider, String subjectId, int postCount, int commentCount) {
+    public Users(String email, String password, String profileId, String nickname,
+        String profileImgUrl, String provider, String subjectId) {
         this.email = email;
         this.password = password;
+        this.profileId = profileId;
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
         this.provider = provider;
         this.subjectId = subjectId;
-        this.postCount = postCount;
-        this.commentCount = commentCount;
+        this.postCount = 0;
+        this.feedCount = 0;
+        this.followerCount = 0;
+        this.followingCount = 0;
+        this.isSignUp = false;
+    }
+
+    public void updateBeginningInfo(String profileId, String nickname) {
+        this.profileId = profileId;
+        this.nickname = nickname;
+        this.isSignUp = true;
+    }
+
+    public void updateProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public void updateNickname(String nickname) {
@@ -67,5 +88,9 @@ public class Users {
 
     public void updateSubjectId(String subjectId) {
         this.subjectId = subjectId;
+    }
+
+    public void signUpComplete() {
+        this.isSignUp = true;
     }
 }

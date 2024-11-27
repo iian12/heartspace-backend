@@ -7,7 +7,6 @@ import javax.crypto.SecretKey;
 
 public class EncryptionUtils {
 
-
     private static final String ALGORITHM = "AES";
     private static final SecretKey SECRET_KEY;
 

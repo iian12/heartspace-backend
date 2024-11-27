@@ -25,15 +25,22 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
 
     public SecurityConfig(JwtTokenProvider jwtTokenProvider,
-        CustomUserDetailsService userDetailsService, CustomOAuth2UserService customOAuth2UserService,
-        CustomOAuth2SuccessHandler customOAuth2SuccessHandler) {
+        CustomUserDetailsService userDetailsService,
+        CustomOAuth2UserService customOAuth2UserService,
+        CustomOAuth2SuccessHandler customOAuth2SuccessHandler,
+        JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+        CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Bean
@@ -45,12 +52,15 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                 .anyRequest().authenticated())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .oauth2Login(oauth2 -> oauth2.successHandler(customOAuth2SuccessHandler)
-                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .oauth2Login(oauth2 ->
+                oauth2.successHandler(customOAuth2SuccessHandler)
+                .userInfoEndpoint(userInfo ->
+                    userInfo.userService(customOAuth2UserService)))
             .exceptionHandling(configurer -> {
-                configurer.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
-                configurer.accessDeniedHandler(new CustomAccessDeniedHandler());
+                configurer.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+                configurer.accessDeniedHandler(customAccessDeniedHandler);
             })
             .addFilterAfter(jwtTokenFilter(), OAuth2LoginAuthenticationFilter.class);
         return http.build();

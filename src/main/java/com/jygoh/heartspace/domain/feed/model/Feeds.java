@@ -1,8 +1,6 @@
-package com.jygoh.heartspace.domain.post.model;
+package com.jygoh.heartspace.domain.feed.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Posts {
+public class Feeds {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,46 +21,28 @@ public class Posts {
 
     private Long userId;
 
-    private String title;
     private String content;
-
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
-    private boolean isAnonymous;
 
     private LocalDateTime createdAt;
     private boolean isUpdated;
     private LocalDateTime updatedAt;
 
-    private int views;
-    private int likes;
+    private int likeCount;
     private int commentCount;
-    private int answerCount;
     private int reportCount;
 
     @Builder
-    public Posts(Long userId, String title, String content, Category category,
-        boolean isAnonymous) {
+    public Feeds(Long userId, String content) {
         this.userId = userId;
-        this.title = title;
         this.content = content;
-        this.category = category;
-        this.isAnonymous = isAnonymous;
         this.createdAt = LocalDateTime.now();
         this.isUpdated = false;
-        this.updatedAt = null;
-        this.views = 0;
-        this.likes = 0;
+        this.likeCount = 0;
         this.commentCount = 0;
-        this.answerCount = 0;
         this.reportCount = 0;
     }
 
-    public void updatePosts(String newTitle, String newContent, boolean isAnonymous) {
-        this.title = newTitle;
-        this.content = newContent;
-        this.isAnonymous = isAnonymous;
+    public void update() {
         this.isUpdated = true;
         this.updatedAt = LocalDateTime.now();
     }

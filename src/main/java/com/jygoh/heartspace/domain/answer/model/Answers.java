@@ -1,8 +1,6 @@
-package com.jygoh.heartspace.domain.comment.model;
+package com.jygoh.heartspace.domain.answer.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,33 +13,37 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comments {
+public class Answers {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long postId;
-    private Long replyId;
     private Long userId;
+    private Long postId;
 
-    @Enumerated(EnumType.STRING)
-    private CommentType commentType;
     private String content;
-    private Long parentCommentId;
 
     private LocalDateTime createdAt;
     private boolean isUpdated;
+    private LocalDateTime updatedAt;
+
+    private int likeCount;
+    private int reportCount;
 
     @Builder
-    public Comments(Long postId, Long replyId, Long userId, CommentType commentType, String content, Long parentCommentId) {
-        this.postId = postId;
-        this.replyId = replyId != null ? replyId : 0L;
+    public Answers(Long userId, Long postId, String content) {
         this.userId = userId;
-        this.commentType = commentType;
+        this.postId = postId;
         this.content = content;
-        this.parentCommentId = parentCommentId != null ? parentCommentId : 0L;
         this.createdAt = LocalDateTime.now();
         this.isUpdated = false;
+        this.likeCount = 0;
+        this.reportCount = 0;
+    }
+
+    public void update() {
+        this.isUpdated = true;
+        this.updatedAt = LocalDateTime.now();
     }
 }

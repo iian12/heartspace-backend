@@ -3,6 +3,8 @@ package com.jygoh.heartspace.global.security.jwt.filter;
 import com.jygoh.heartspace.global.security.auth.service.CustomUserDetailsService;
 import com.jygoh.heartspace.global.security.jwt.service.JwtTokenProvider;
 import com.jygoh.heartspace.global.security.utils.TokenUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,18 +27,24 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-        String method = request.getMethod();
-
-        // 필터 통과 경로 구현
-
         String token = TokenUtils.extractTokenFromRequest(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
+        if (token == null) {
+            handleException(response, "MISSING_TOKEN", "Token is missing");
+            return;
+        }
+
+        try {
+            if (!jwtTokenProvider.validateToken(token)) {
+                handleException(response, "INVALID_TOKEN", "Invalid token");
+                return;
+            }
+
             Long userId = TokenUtils.getUserIdFromToken(token);
             UserDetails userDetails = userDetailsService.loadUserById(userId);
             UsernamePasswordAuthenticationToken authentication =
@@ -44,11 +52,29 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     userDetails, null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else if (token == null) {
-            SecurityContextHolder.clearContext();
+
+        } catch (ExpiredJwtException e) {
+            handleException(
+                response, "TOKEN_EXPIRED", "Token has expired");
+            return;
+        } catch (SignatureException e) {
+            handleException(
+                response, "INVALID_SIGNATURE", "Token signature is invalid");
+            return;
+        } catch (Exception e) {
+            handleException(
+                response, "TOKEN_ERROR", "An error occurred while processing the token");
+            return;
         }
 
         filterChain.doFilter(request, response);
     }
 
+    private void handleException(HttpServletResponse response, String errorCode, String message)
+        throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(
+            String.format("{\"error_code\": \"%s\", \"message\": \"%s\"}", errorCode, message));
+    }
 }

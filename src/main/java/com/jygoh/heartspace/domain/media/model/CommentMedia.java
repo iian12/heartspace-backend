@@ -1,4 +1,4 @@
-package com.jygoh.heartspace.domain.reply.model;
+package com.jygoh.heartspace.domain.media.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,20 +12,20 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Replies {
+public class CommentMedia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long postId;
-    private Long userId;
-    private String content;
+    private Long commentId;
+    private String mediaUrl;
+    private int orderIndex;
 
     @Builder
-    public Replies(Long postId, Long userId, String content) {
-        this.postId = postId;
-        this.userId = userId;
-        this.content = content;
+    public CommentMedia(Long commentId, String mediaUrl, int orderIndex) {
+        this.commentId = commentId;
+        this.mediaUrl = mediaUrl;
+        this.orderIndex = orderIndex;
     }
 }

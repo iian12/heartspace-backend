@@ -23,7 +23,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = getAttribute(oAuth2User, provider, "email");
         String profileImageUrl = getAttribute(oAuth2User, provider, "picture");
         String subjectId = getAttribute(oAuth2User, provider, "sub");
-        String name = getAttribute(oAuth2User, provider, "name");
 
         boolean isNewUser = userRepository.findByEmail(email).isEmpty();
 
@@ -34,7 +33,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
             return existingMember;
         }).orElseGet(() -> {
-            Users newUser = Users.builder().email(email).nickname(name)
+            Users newUser = Users.builder().email(email)
                 .profileImgUrl(profileImageUrl).provider("GOOGLE").subjectId(subjectId).build();
             return userRepository.save(newUser);
         });

@@ -91,4 +91,8 @@ public class CustomUserDetail implements UserDetails, OAuth2User {
     public boolean isNewUser() {
         return isNewUser;
     }
+
+    public String getNickname() {
+        return user != null ? user.getNickname() : null;
+    }
 }
