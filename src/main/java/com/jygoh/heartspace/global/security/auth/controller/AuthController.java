@@ -89,7 +89,7 @@ public class AuthController {
         if (tokenResponseDto.getAccessToken() != null && tokenResponseDto.getRefreshToken() != null) {
             response.setHeader("Authorization", "Bearer " + tokenResponseDto.getAccessToken());
             response.setHeader("Refresh-Token", "Bearer " + tokenResponseDto.getRefreshToken());
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
