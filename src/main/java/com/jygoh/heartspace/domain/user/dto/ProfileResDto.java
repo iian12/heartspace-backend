@@ -12,18 +12,16 @@ public class ProfileResDto {
     private String nickname;
     private String profileImgUrl;
     private int postCount;
-    private int feedCount;
     private int followerCount;
     private int followingCount;
 
     @Builder
     public ProfileResDto(String profileId, String nickname, String profileImgUrl, int postCount,
-        int feedCount, int followerCount, int followingCount) {
+        int followerCount, int followingCount) {
         this.profileId = profileId;
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
         this.postCount = postCount;
-        this.feedCount = feedCount;
         this.followerCount = followerCount;
         this.followingCount = followingCount;
 

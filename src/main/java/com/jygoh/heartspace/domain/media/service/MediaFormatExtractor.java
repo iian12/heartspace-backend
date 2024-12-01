@@ -16,7 +16,6 @@ public class MediaFormatExtractor {
             case "jpg", "jpeg", "png", "bmp", "webp" -> MediaType.IMAGE;
             case "mp4", "mkv", "avi", "mov", "flv" -> MediaType.VIDEO;
             case "gif" -> MediaType.GIF;
-            case "mp3", "wav", "aac" -> MediaType.AUDIO;
             default -> throw new UnsupportedMediaFormatException("Unsupported media format");
         };
     }

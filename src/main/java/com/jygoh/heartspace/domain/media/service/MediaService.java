@@ -9,4 +9,6 @@ public interface MediaService {
     String uploadOneMedia(MultipartFile file);
 
     List<String> uploadMediaFiles(UploadMediaDto uploadMediaDto);
+
+    String generateMediaThumbnail(String mediaUrl);
 }

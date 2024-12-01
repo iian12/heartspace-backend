@@ -11,4 +11,6 @@ public interface UsersService {
     ProfileResDto getUserProfile(String profileId);
 
     void updateProfileImg(String profileImgUrl, String token);
+
+    boolean validateProfileId(String profileId);
 }

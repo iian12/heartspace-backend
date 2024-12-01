@@ -59,7 +59,6 @@ public class UsersServiceImpl implements UsersService {
             .profileImgUrl(targetUser.getProfileImgUrl())
             .nickname(targetUser.getNickname())
             .postCount(targetUser.getPostCount())
-            .feedCount(targetUser.getFeedCount())
             .followerCount(targetUser.getFollowerCount())
             .followingCount(targetUser.getFollowingCount())
             .build();
@@ -71,5 +70,10 @@ public class UsersServiceImpl implements UsersService {
             .orElseThrow(() -> new IllegalArgumentException("Invalid User"));
 
         user.updateProfileImgUrl(profileImgUrl);
+    }
+
+    @Override
+    public boolean validateProfileId(String profileId) {
+        return !userRepository.existsByProfileId(profileId);
     }
 }

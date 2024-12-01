@@ -20,6 +20,7 @@ public class PostComments {
 
     private Long userId;
     private Long postId;
+    private Long parentId;
 
     private String content;
 
@@ -29,13 +30,19 @@ public class PostComments {
     private int likeCount;
     private int reportCount;
 
-    public PostComments(Long userId, Long postId, String content) {
+    public PostComments(Long userId, Long postId, Long parentId, String content) {
         this.userId = userId;
         this.postId = postId;
         this.content = content;
+        this.parentId = (parentId == null) ? 0L : parentId;
         this.createdAt = LocalDateTime.now();
         this.isUpdated = false;
         this.likeCount = 0;
         this.reportCount = 0;
+    }
+
+    public void updateComment(String newContent) {
+        this.content = newContent;
+        this.isUpdated = true;
     }
 }

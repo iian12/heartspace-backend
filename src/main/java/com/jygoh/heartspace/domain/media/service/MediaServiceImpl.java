@@ -8,11 +8,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @Transactional
 public class MediaServiceImpl implements MediaService {
@@ -20,9 +22,8 @@ public class MediaServiceImpl implements MediaService {
     @Value("${upload.directory}")
     private String uploadDirectory;
 
-    private static final int MAX_MEDIA_COUNT_FEED = 30;
+    private static final int MAX_MEDIA_COUNT_DIARY = 3;
     private static final int MAX_MEDIA_COUNT_POST = 5;
-    private static final int MAX_MEDIA_COUNT_ANSWER = 5;
     private static final int MAX_MEDIA_COUNT_COMMENT = 1;
 
     @Override
@@ -36,7 +37,7 @@ public class MediaServiceImpl implements MediaService {
         int maxMediaCount = getMaxMediaCountForContext(uploadMediaDto.getContext());
 
         if (uploadMediaDto.getFiles().size() > maxMediaCount) {
-            throw new IllegalArgumentException("too many files");
+            throw new IllegalArgumentException("Too many Files");
         }
         List<String> mediaUrls = new ArrayList<>();
 
@@ -44,6 +45,11 @@ public class MediaServiceImpl implements MediaService {
             mediaUrls.add(generateMediaUrl(file));
         }
         return mediaUrls;
+    }
+
+    @Override
+    public String generateMediaThumbnail(String mediaUrl) {
+        return "";
     }
 
     private String getFileExtension(String fileName) {
@@ -55,9 +61,8 @@ public class MediaServiceImpl implements MediaService {
 
     private int getMaxMediaCountForContext(String context) {
         return switch (context.toLowerCase()) {
-            case "feed" -> MAX_MEDIA_COUNT_FEED;
+            case "diary" -> MAX_MEDIA_COUNT_DIARY;
             case "post" -> MAX_MEDIA_COUNT_POST;
-            case "answer" -> MAX_MEDIA_COUNT_ANSWER;
             case "comment" -> MAX_MEDIA_COUNT_COMMENT;
             default -> throw new IllegalArgumentException("Invalid context: " + context);
         };

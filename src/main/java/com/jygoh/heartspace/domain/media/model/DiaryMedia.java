@@ -7,27 +7,29 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FeedMedia {
+public class DiaryMedia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long feedId;
+    private Long diaryId;
     private String mediaUrl;
     private int orderIndex;
 
     @Enumerated(EnumType.STRING)
     private MediaType mediaType;
 
-    public FeedMedia(Long feedId, String mediaUrl, int orderIndex, MediaType mediaType) {
-        this.feedId = feedId;
+    @Builder
+    public DiaryMedia(Long diaryId, String mediaUrl, int orderIndex, MediaType mediaType) {
+        this.diaryId = diaryId;
         this.mediaUrl = mediaUrl;
         this.orderIndex = orderIndex;
         this.mediaType = mediaType;

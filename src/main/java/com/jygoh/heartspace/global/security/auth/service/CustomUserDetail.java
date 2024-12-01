@@ -1,52 +1,63 @@
 package com.jygoh.heartspace.global.security.auth.service;
 
+import com.jygoh.heartspace.domain.user.model.Role;
 import com.jygoh.heartspace.domain.user.model.Users;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public class CustomUserDetail implements UserDetails, OAuth2User {
 
     private final Users user;
-    private final OAuth2User oAuth2User;
     private final Long userId;
     private final boolean isNewUser;
 
     public CustomUserDetail(Users user, Long userId, boolean isNewUser) {
         this.user = user;
-        this.oAuth2User = null;
-        this.userId = userId;
-        this.isNewUser = isNewUser;
-    }
-
-    public CustomUserDetail(OAuth2User oAuth2User, Long userId, boolean isNewUser) {
-        this.user = null;
-        this.oAuth2User = oAuth2User;
         this.userId = userId;
         this.isNewUser = isNewUser;
     }
 
     @Override
     public String getName() {
-        return oAuth2User != null ? oAuth2User.getName() : null;
+        return user != null ? String.valueOf(user.getId()) : null;
     }
 
     @Override
     public Map<String, Object> getAttributes() {
-        return oAuth2User != null ? oAuth2User.getAttributes() : null;
+        if (user != null) {
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("id", user.getId());
+            attributes.put("email", user.getEmail());
+            attributes.put("nickname", user.getNickname());
+            attributes.put("profileImgUrl", user.getProfileImgUrl());
+            return attributes;
+        }
+
+        return null;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (user != null) {
-            return null;
-        } else if (oAuth2User != null) {
-            return oAuth2User.getAuthorities();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        switch (user.getRole()) {
+            case ADMIN: authorities.add(getAuthority(Role.ADMIN));
+            case USER: authorities.add(getAuthority(Role.USER));
         }
-        return null;
+
+        return authorities;
+    }
+
+    private GrantedAuthority getAuthority(Role role) {
+        return new SimpleGrantedAuthority("ROLE_" + role);
     }
 
     @Override
@@ -56,8 +67,7 @@ public class CustomUserDetail implements UserDetails, OAuth2User {
 
     @Override
     public String getUsername() {
-        return user != null ? user.getEmail()
-            : Objects.requireNonNull(oAuth2User).getAttribute("email");
+        return user != null ? user.getEmail() : null;
     }
 
     @Override

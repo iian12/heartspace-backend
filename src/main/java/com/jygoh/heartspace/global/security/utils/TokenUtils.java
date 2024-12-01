@@ -49,6 +49,10 @@ public class TokenUtils {
 
     public static Long getUserIdFromToken(String token) {
         try {
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
             Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

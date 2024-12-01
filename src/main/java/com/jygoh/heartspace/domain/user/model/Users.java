@@ -2,6 +2,8 @@ package com.jygoh.heartspace.domain.user.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,18 +36,21 @@ public class Users {
     private String nickname;
 
     private String profileImgUrl;
+    private String description;
 
     private String provider;
 
     private String subjectId;
 
     private int postCount;
-    private int feedCount;
 
     private int followerCount;
     private int followingCount;
 
     private boolean isSignUp;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Builder
     public Users(String email, String password, String profileId, String nickname,
@@ -58,15 +63,18 @@ public class Users {
         this.provider = provider;
         this.subjectId = subjectId;
         this.postCount = 0;
-        this.feedCount = 0;
         this.followerCount = 0;
         this.followingCount = 0;
         this.isSignUp = false;
+        this.role = Role.USER;
     }
 
-    public void updateBeginningInfo(String profileId, String nickname) {
+    public void updateBeginningInfo(String profileId, String nickname, String profileImgUrl,
+        String description) {
         this.profileId = profileId;
         this.nickname = nickname;
+        this.profileImgUrl = profileImgUrl;
+        this.description = description;
         this.isSignUp = true;
     }
 

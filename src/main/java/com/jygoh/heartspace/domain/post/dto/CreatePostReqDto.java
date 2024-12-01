@@ -13,16 +13,16 @@ public class CreatePostReqDto {
     private String title;
     private String content;
     private List<MediaDto> mediaList;
-    private String categoryName;
-    private boolean isAnonymous;
+    private String type;
+    private List<String> hashtagNames;
 
     @Builder
     public CreatePostReqDto(String title, String content, List<MediaDto> mediaList,
-        String categoryName, boolean isAnonymous) {
+        String type, List<String> hashtagNames) {
         this.title = title;
         this.content = content;
         this.mediaList = mediaList;
-        this.categoryName = categoryName;
-        this.isAnonymous = isAnonymous;
+        this.type = type;
+        this.hashtagNames = hashtagNames;
     }
 }
