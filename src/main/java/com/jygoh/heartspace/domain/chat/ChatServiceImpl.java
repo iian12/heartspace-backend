@@ -27,30 +27,33 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void sendMessage(String content, String profileId, String token) {
-        Long userId = TokenUtils.getUserIdFromToken(token);
+    public void sendMessage(String content, String profileId, Long userId) {
         Users receiver = userRepository.findByProfileId(profileId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid User"));
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findChatRoom(userId, receiver.getId());
+        String receiverSessionId = webSocketSessionManager.getOtherPrincipal(receiver.getId());
 
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
-            String receiverSessionId = webSocketSessionManager.getOtherPrincipal(receiver.getId());
-
             ChatMessage chatMessage = ChatMessage.builder()
                 .senderId(userId)
                 .roomId(chatRoom.getId())
                 .content(content)
                 .build();
 
-            simpMessagingTemplate.convertAndSend(receiverSessionId + "/queue/chat", content);
+            simpMessagingTemplate.convertAndSendToUser(receiverSessionId, "/queue/chat", chatMessage);
         } else {
             ChatRoom chatRoom = ChatRoom.builder()
                 .user1Id(userId)
                 .user2Id(receiver.getId())
                 .build();
             chatRoomRepository.save(chatRoom);
-            simpMessagingTemplate.convertAndSend(receiver + "/queue/chat", content);
+            ChatMessage chatMessage = ChatMessage.builder()
+                .senderId(userId)
+                .roomId(chatRoom.getId())
+                .content(content)
+                .build();
+            simpMessagingTemplate.convertAndSendToUser(receiverSessionId, "/queue/chat", chatMessage);
         }
     }
 }

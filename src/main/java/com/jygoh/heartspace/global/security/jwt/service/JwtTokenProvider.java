@@ -69,8 +69,9 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
 
+        String clearedToken = token.substring(7);
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(clearedToken);
             return true;
         } catch (SignatureException | MalformedJwtException e) {
             return false; // 잘못된 서명

@@ -30,7 +30,7 @@ public class OpenChatRoom {
     private List<Long> participantIds;
 
     @Builder
-    public OpenChatRoom(String title, String description, int userCount, int maxUserCount, List<Long> participantIds) {
+    public OpenChatRoom(String title, String description, int maxUserCount, List<Long> participantIds) {
         this.title = title;
         this.description = description;
         this.userCount = 1;
